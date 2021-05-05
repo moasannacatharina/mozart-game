@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import * as Tone from 'tone';
 var config = {
   type: Phaser.AUTO,
   width: 800,
@@ -70,7 +71,7 @@ function create() {
   player = this.physics.add.sprite(100, 0, 'dude');
 
   //  Player physics properties. Give the little guy a slight bounce.
-  player.setBounce(0.2);
+  // player.setBounce(0.2);
   player.setCollideWorldBounds(true);
 
   //  Our player animations, turning, walking left and walking right.
@@ -116,14 +117,16 @@ function create() {
     fontSize: '32px',
     fill: '#000',
   });
+
+  let index = 0;
   keys = this.physics.add.group({
     key: 'key',
     repeat: 7,
+    name: index++,
     setXY: { x: 55, y: 400, stepX: 95 },
   });
 
   keys.children.iterate(function (child) {
-    //  Give each star a slightly different bounce
     child.setBounceY(Phaser.Math.FloatBetween(0.1, 0.2));
   });
 
@@ -201,12 +204,47 @@ function collectStar(player, star) {
 }
 
 function hitKey(player, key) {
-  key.setTint(0x7dcea0);
-  key.setBounce(0.5);
+  const synth = new Tone.Synth().toDestination();
+  if (key === keys.children.entries[0]) {
+    key.setTint(0x7dcea0);
+    key.setBounce(0.5);
 
-  setTimeout(function () {
-    key.setTint(0xffffff);
-  }, 500);
+    setTimeout(function () {
+      key.setTint(0xffffff);
+    }, 500);
+
+    synth.triggerAttackRelease('C4', 2);
+    console.log('first key!');
+  }
+
+  if (key === keys.children.entries[1]) {
+    synth.triggerAttackRelease('D4', '4n');
+    console.log('second key!');
+  }
+  if (key === keys.children.entries[2]) {
+    synth.triggerAttackRelease('E4', '8n');
+    console.log('third key!');
+  }
+  if (key === keys.children.entries[3]) {
+    synth.triggerAttackRelease('F4', '8n');
+    console.log('fourth key!');
+  }
+  if (key === keys.children.entries[4]) {
+    synth.triggerAttackRelease('G4', '8n');
+    console.log('fifth key!');
+  }
+  if (key === keys.children.entries[5]) {
+    synth.triggerAttackRelease('A4', '8n');
+    console.log('sixth key!');
+  }
+  if (key === keys.children.entries[6]) {
+    synth.triggerAttackRelease('B4', '8n');
+    console.log('seventh key!');
+  }
+  if (key === keys.children.entries[7]) {
+    synth.triggerAttackRelease('C5', '8n');
+    console.log('octave!');
+  }
 }
 
 function hitBomb(player, bomb) {
