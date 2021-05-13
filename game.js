@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import * as Tone from 'tone';
+import { buyHotDog, lilleKatt } from './melodies.js';
 var config = {
   type: Phaser.AUTO,
   width: 800,
@@ -8,7 +9,7 @@ var config = {
     default: 'arcade',
     arcade: {
       gravity: { y: 300 },
-      debug: false,
+      debug: true,
     },
   },
   scene: {
@@ -28,6 +29,8 @@ var gameOver = false;
 var scoreText;
 let keys;
 let colliderActivated = true;
+let gameStart = true;
+let startText;
 
 var game = new Phaser.Game(config);
 
@@ -61,22 +64,11 @@ function create() {
   //  Now let's create some ledges
   // platforms.create(600, 400, "ground");
   platforms.create(50, 275, 'ground');
-  // platforms.create(750, 220, "ground");
-
-  // keys.create(50, 535, "key");
-  // keys.create(145, 535, "key");
-  // keys.create(240, 535, "key");
-  // keys.create(335, 535, "key");
-  // keys.create(430, 535, "key");
-  // keys.create(525, 535, "key");
-  // keys.create(620, 535, "key");
-  // keys.create(715, 535, "key");
 
   // The player and its settings
   player = this.physics.add.sprite(100, 0, 'dude');
 
   //  Player physics properties. Give the little guy a slight bounce.
-  // player.setBounce(0.2);
   player.setCollideWorldBounds(true);
 
   //  Our player animations, turning, walking left and walking right.
@@ -117,25 +109,13 @@ function create() {
   //  Input Events
   cursors = this.input.keyboard.createCursorKeys();
 
-  //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-  // stars = this.physics.add.group({
-  //   key: 'star',
-  //   repeat: 11,
-  //   setXY: { x: 12, y: 0, stepX: 70 },
-  // });
-
-  // stars.children.iterate(function (child) {
-  //  Give each star a slightly different bounce
-  //   child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-  // });
-
   bombs = this.physics.add.group();
 
-  //  The score
-  scoreText = this.add.text(16, 16, 'score: 0', {
-    fontSize: '32px',
-    fill: '#000',
-  });
+  // //  The score
+  // scoreText = this.add.text(16, 16, 'score: 0', {
+  //   fontSize: '32px',
+  //   fill: '#000',
+  // });
 
   let index = 0;
   keys = this.physics.add.group({
@@ -147,8 +127,6 @@ function create() {
 
   //  Collide the player and the stars with the platforms
   this.physics.add.collider(player, platforms);
-  // this.physics.add.collider(stars, platforms);
-  // this.physics.add.collider(stars, keys);
   this.physics.add.collider(keys, keys);
   this.physics.add.collider(keys, platforms);
   this.physics.add.collider(player, keys);
@@ -174,6 +152,21 @@ function create() {
   );
 
   this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+  if (gameStart) {
+    startText = this.add.text(260, 16, '', {
+      fontSize: '32px',
+      fill: '#000',
+    });
+    playSequence();
+  }
+  if (!gameStart) {
+    setTimeout(function () {
+      startText.setText('GO!');
+    }, 5000);
+  }
+
+  console.log(this.time);
 }
 
 function update() {
@@ -229,6 +222,15 @@ function collectStar(player, star) {
     bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
     bomb.allowGravity = false;
   }
+}
+
+function playSequence() {
+  const synth = new Tone.Synth().toDestination();
+  startText.setText('Play this melody');
+  console.log(gameStart);
+
+  buyHotDog();
+  gameStart = false;
 }
 
 function hitKey(player, key) {
@@ -290,3 +292,5 @@ function hitBomb(player, bomb) {
 
   gameOver = true;
 }
+
+export { keys };
