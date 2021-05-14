@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import * as Tone from 'tone';
-import { buyHotDog, lilleKatt } from './melodies.js';
+import { myMelodies } from './melodies.js';
 var config = {
   type: Phaser.AUTO,
   width: 800,
@@ -31,12 +31,15 @@ let keys;
 let colliderActivated = true;
 let gameStart = true;
 let startText;
+let songName;
 
 var game = new Phaser.Game(config);
 
 function preload() {
   this.load.image('sky', 'assets/background.png');
-  this.load.image('ground', 'assets/platform.png');
+  this.load.image('background', 'assets/background2.png');
+  this.load.image('ground', 'assets/ground3.png');
+  this.load.image('platform', 'assets/platform2.png');
   this.load.image('star', 'assets/star.png');
   this.load.image('bomb', 'assets/bomb.png');
   this.load.image('key', 'assets/key.png');
@@ -52,21 +55,21 @@ function preload() {
 
 function create() {
   //  A simple background for our game
-  this.add.image(400, 300, 'sky');
+  this.add.image(400, 300, 'background');
 
   //  The platforms group contains the ground and the 2 ledges we can jump on
   platforms = this.physics.add.staticGroup();
   // keys = this.physics.add.staticGroup();
   // //  Here we create the ground.
   // //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-  platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+  platforms.create(400, 588, 'ground').setScale(2).refreshBody();
 
   //  Now let's create some ledges
   // platforms.create(600, 400, "ground");
-  platforms.create(50, 275, 'ground');
+  platforms.create(400, 280, 'platform');
 
   // The player and its settings
-  player = this.physics.add.sprite(100, 0, 'dude');
+  player = this.physics.add.sprite(400, 0, 'dude');
 
   //  Player physics properties. Give the little guy a slight bounce.
   player.setCollideWorldBounds(true);
@@ -141,6 +144,18 @@ function create() {
   //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
   // this.physics.add.overlap(player, stars, collectStar, null, this);
 
+  // this.physics.add.overlap(
+  //   player,
+  //   keys,
+  //   hitKey,
+  //   () => {
+  //     return colliderActivated;
+  //   },
+  //   this
+  // );
+
+  this.physics.add.collider(player, bombs, hitBomb, null, this);
+
   this.physics.add.overlap(
     player,
     keys,
@@ -151,14 +166,17 @@ function create() {
     this
   );
 
-  this.physics.add.collider(player, bombs, hitBomb, null, this);
-
   if (gameStart) {
     startText = this.add.text(260, 16, '', {
       fontSize: '32px',
       fill: '#000',
     });
-    playSequence();
+    songName = playSequence();
+    // console.log(songName);
+
+    if (songName === 'lilleKatt') {
+      console.log('mjau!');
+    }
   }
   if (!gameStart) {
     setTimeout(function () {
@@ -229,11 +247,20 @@ function playSequence() {
   startText.setText('Play this melody');
   console.log(gameStart);
 
-  buyHotDog();
+  const songArray = Object.entries(myMelodies);
+
+  const random = Math.floor(Math.random() * songArray.length);
+
+  songName = songArray[random][0];
+  const songFunction = songArray[random][1];
+  songFunction();
+
   gameStart = false;
+  return songName;
 }
 
 function hitKey(player, key) {
+  console.log(songName);
   key.setTint(0x7dcea0);
   key.anims.play('pressed', true);
   var pianoImg = this.textures.get('pianokey');
