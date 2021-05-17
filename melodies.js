@@ -73,4 +73,9 @@ const myMelodies = {
   },
 };
 
-export { myMelodies };
+const sequences = {
+  lilleKatt: 'piano-0piano-1piano-2',
+  buyHotDog: 'piano-5piano-4piano-3',
+};
+
+export { myMelodies, sequences };

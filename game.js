@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import * as Tone from 'tone';
-import { myMelodies } from './melodies.js';
+import { myMelodies, sequences } from './melodies.js';
 var config = {
   type: Phaser.AUTO,
   width: 800,
@@ -32,6 +32,7 @@ let colliderActivated = true;
 let gameStart = true;
 let startText;
 let songName;
+let playedSequence = [];
 
 var game = new Phaser.Game(config);
 
@@ -114,19 +115,21 @@ function create() {
 
   bombs = this.physics.add.group();
 
-  // //  The score
-  // scoreText = this.add.text(16, 16, 'score: 0', {
-  //   fontSize: '32px',
-  //   fill: '#000',
-  // });
+  //  The score
+  scoreText = this.add.text(16, 16, 'Score: 0', {
+    fontSize: '32px',
+    fill: '#000',
+  });
 
   let index = 0;
   keys = this.physics.add.group({
     key: 'pianokey',
     repeat: 7,
-    name: index++,
+    name: 'hello world',
     setXY: { x: 55, y: 475, stepX: 98 },
   });
+
+  keys.children.entries.map((item, i) => (item.name = 'piano-' + i));
 
   //  Collide the player and the stars with the platforms
   this.physics.add.collider(player, platforms);
@@ -166,25 +169,12 @@ function create() {
     this
   );
 
-  if (gameStart) {
-    startText = this.add.text(260, 16, '', {
-      fontSize: '32px',
-      fill: '#000',
-    });
-    songName = playSequence();
-    // console.log(songName);
+  startText = this.add.text(260, 16, '', {
+    fontSize: '32px',
+    fill: '#000',
+  });
 
-    if (songName === 'lilleKatt') {
-      console.log('mjau!');
-    }
-  }
-  if (!gameStart) {
-    setTimeout(function () {
-      startText.setText('GO!');
-    }, 5000);
-  }
-
-  console.log(this.time);
+  startGame(gameStart);
 }
 
 function update() {
@@ -213,6 +203,18 @@ function update() {
     });
     player.setVelocityY(-330);
     colliderActivated = true;
+  }
+}
+
+function startGame(gameStart) {
+  if (gameStart) {
+    songName = playSequence();
+  }
+  if (!gameStart) {
+    setTimeout(function () {
+      startText.setText('GO!');
+      player.body.enable = true;
+    }, 5000);
   }
 }
 
@@ -245,7 +247,6 @@ function collectStar(player, star) {
 function playSequence() {
   const synth = new Tone.Synth().toDestination();
   startText.setText('Play this melody');
-  console.log(gameStart);
 
   const songArray = Object.entries(myMelodies);
 
@@ -255,12 +256,14 @@ function playSequence() {
   const songFunction = songArray[random][1];
   songFunction();
 
+  player.body.enable = false;
+
   gameStart = false;
+  startGame(gameStart);
   return songName;
 }
 
 function hitKey(player, key) {
-  console.log(songName);
   key.setTint(0x7dcea0);
   key.anims.play('pressed', true);
   var pianoImg = this.textures.get('pianokey');
@@ -270,10 +273,8 @@ function hitKey(player, key) {
   key.setSize(90, 100, true);
   key.setOffset(0, 25);
 
-  console.log(key.body.offset);
-
   const synth = new Tone.Synth().toDestination();
-  if (key === keys.children.entries[0]) {
+  if (key.name === keys.children.entries[0].name) {
     synth.triggerAttackRelease('C4', '8n');
     console.log('first key!');
   }
@@ -307,7 +308,36 @@ function hitKey(player, key) {
     console.log('octave!');
   }
 
+  playedSequence.push(key.name);
+
+  console.log(sequences[songName]);
+  console.log(playedSequence);
+
+  if (hasPoint(playedSequence, sequences[songName])) {
+    console.log('get point for', songName);
+    player.setX(400);
+    player.setY(240);
+    keys.children.iterate(function (child) {
+      child.anims.play('notpressed', true);
+      child.setTint(0xffffff);
+    });
+    playedSequence = [];
+    gameStart = true;
+    startGame(gameStart);
+  }
+
   colliderActivated = false;
+}
+
+function hasPoint(userInput, target) {
+  const str = userInput.join('');
+
+  if (str.includes(target)) {
+    score += 10;
+    scoreText.setText('Score: ' + score);
+  }
+
+  return str.includes(target);
 }
 
 function hitBomb(player, bomb) {
