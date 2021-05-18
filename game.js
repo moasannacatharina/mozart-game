@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import * as Tone from 'tone';
-import { myMelodies, sequences } from './melodies.js';
+import { levelOneMelodies, levelTwoMelodies, sequences } from './melodies.js';
 var config = {
   type: Phaser.AUTO,
   width: 800,
@@ -144,19 +144,6 @@ function create() {
     child.body.checkCollision.right = false;
   });
 
-  //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-  // this.physics.add.overlap(player, stars, collectStar, null, this);
-
-  // this.physics.add.overlap(
-  //   player,
-  //   keys,
-  //   hitKey,
-  //   () => {
-  //     return colliderActivated;
-  //   },
-  //   this
-  // );
-
   this.physics.add.collider(player, bombs, hitBomb, null, this);
 
   this.physics.add.overlap(
@@ -214,6 +201,7 @@ function startGame(gameStart) {
     setTimeout(function () {
       startText.setText('GO!');
       player.body.enable = true;
+      player.setVisible(true);
     }, 5000);
   }
 }
@@ -248,7 +236,32 @@ function playSequence() {
   const synth = new Tone.Synth().toDestination();
   startText.setText('Play this melody');
 
-  const songArray = Object.entries(myMelodies);
+  // console.log(levelOneMelodies);
+  let songArray = Object.entries(levelOneMelodies);
+  // console.log(songArray);
+
+  if (
+    Object.keys(levelOneMelodies).length === 0 &&
+    levelOneMelodies.constructor === Object
+  ) {
+    console.log(levelTwoMelodies);
+
+    songArray = Object.entries(levelTwoMelodies);
+
+    const random = Math.floor(Math.random() * songArray.length);
+
+    songName = songArray[random][0];
+    const songFunction = songArray[random][1];
+    songFunction();
+
+    player.body.enable = false;
+    player.setVisible(false);
+
+    gameStart = false;
+    startGame(gameStart);
+
+    return songName;
+  }
 
   const random = Math.floor(Math.random() * songArray.length);
 
@@ -257,9 +270,11 @@ function playSequence() {
   songFunction();
 
   player.body.enable = false;
+  player.setVisible(false);
 
   gameStart = false;
   startGame(gameStart);
+
   return songName;
 }
 
@@ -284,46 +299,50 @@ function hitKey(player, key) {
     console.log('second key!');
   }
   if (key === keys.children.entries[2]) {
-    synth.triggerAttackRelease('E4', '8n');
+    synth.triggerAttackRelease('E4', '4n');
     console.log('third key!');
   }
   if (key === keys.children.entries[3]) {
-    synth.triggerAttackRelease('F4', '8n');
+    synth.triggerAttackRelease('F4', '4n');
     console.log('fourth key!');
   }
   if (key === keys.children.entries[4]) {
-    synth.triggerAttackRelease('G4', '8n');
+    synth.triggerAttackRelease('G4', '4n');
     console.log('fifth key!');
   }
   if (key === keys.children.entries[5]) {
-    synth.triggerAttackRelease('A4', '8n');
+    synth.triggerAttackRelease('A4', '4n');
     console.log('sixth key!');
   }
   if (key === keys.children.entries[6]) {
-    synth.triggerAttackRelease('B4', '8n');
+    synth.triggerAttackRelease('B4', '4n');
     console.log('seventh key!');
   }
   if (key === keys.children.entries[7]) {
-    synth.triggerAttackRelease('C5', '8n');
+    synth.triggerAttackRelease('C5', '4n');
     console.log('octave!');
   }
 
   playedSequence.push(key.name);
 
-  console.log(sequences[songName]);
-  console.log(playedSequence);
+  // console.log(sequences[songName]);
+  // console.log(playedSequence);
 
   if (hasPoint(playedSequence, sequences[songName])) {
     console.log('get point for', songName);
-    player.setX(400);
-    player.setY(240);
-    keys.children.iterate(function (child) {
-      child.anims.play('notpressed', true);
-      child.setTint(0xffffff);
-    });
     playedSequence = [];
     gameStart = true;
-    startGame(gameStart);
+    delete levelOneMelodies[songName];
+
+    setTimeout(() => {
+      keys.children.iterate(function (child) {
+        child.anims.play('notpressed', true);
+        child.setTint(0xffffff);
+      });
+      player.setX(400);
+      player.setY(240);
+      startGame(gameStart);
+    }, 1000);
   }
 
   colliderActivated = false;
