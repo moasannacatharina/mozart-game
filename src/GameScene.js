@@ -23,8 +23,7 @@ class GameScene extends Scene {
   }
 
   preload() {
-    this.load.image('sky', 'assets/background.png');
-    this.load.image('background', 'assets/background2.png');
+    this.load.image('background', 'assets/background.png');
     this.load.image('ground', 'assets/ground3.png');
     this.load.image('platform', 'assets/platform2.png');
     this.load.image('star', 'assets/star.png');
@@ -142,7 +141,7 @@ class GameScene extends Scene {
       this.keys,
       this.hitKey,
       () => {
-        return colliderActivated;
+        return this.colliderActivated;
       },
       this
     );
@@ -189,7 +188,7 @@ class GameScene extends Scene {
       this.songName = this.playSequence();
     }
     if (!gameStart) {
-      setTimeout(function () {
+      setTimeout(() => {
         this.startText.setText('GO!');
         this.player.body.enable = true;
         this.player.setVisible(true);
@@ -241,7 +240,7 @@ class GameScene extends Scene {
 
       this.songName = songArray[random][0];
       const songFunction = songArray[random][1];
-      songFunction();
+      songFunction(this);
 
       console.log(this.player);
       this.player.body.enable = false;
@@ -257,7 +256,7 @@ class GameScene extends Scene {
 
     this.songName = songArray[random][0];
     const songFunction = songArray[random][1];
-    songFunction();
+    songFunction(this);
 
     this.player.body.enable = false;
     this.player.setVisible();
@@ -315,10 +314,9 @@ class GameScene extends Scene {
 
     this.playedSequence.push(key.name);
 
-    console.log(sequences[this.songName]);
     // console.log(playedSequence);
 
-    if (hasPoint(playedSequence, sequences[this.songName])) {
+    if (this.hasPoint(this.playedSequence, sequences[this.songName])) {
       console.log('get point for', this.songName);
       this.playedSequence = [];
       this.gameStart = true;
@@ -343,7 +341,7 @@ class GameScene extends Scene {
 
     if (str.includes(target)) {
       this.score += 10;
-      this.scoreText.setText('Score: ' + score);
+      this.scoreText.setText('Score: ' + this.score);
     }
 
     return str.includes(target);
