@@ -142,7 +142,41 @@ const levelOneMelodies = {
   },
 };
 
-const levelTwoMelodies = {};
+const levelTwoMelodies = {
+  buyHotDog: (game) => {
+    setTimeout(function () {
+      game.keys.children.entries[5].anims.play('pressed', true);
+      game.keys.children.entries[5].setTint(0x7dcea0);
+      synth.triggerAttackRelease('A4', '4n');
+
+      setTimeout(function () {
+        game.keys.children.entries[5].anims.play('notpressed', true);
+        game.keys.children.entries[5].setTint(0xffffff);
+      }, 500);
+    }, 2000);
+    setTimeout(function () {
+      game.keys.children.entries[4].anims.play('pressed', true);
+      game.keys.children.entries[4].setTint(0x7dcea0);
+      synth.triggerAttackRelease('G4', '4n');
+
+      setTimeout(function () {
+        game.keys.children.entries[4].anims.play('notpressed', true);
+
+        game.keys.children.entries[4].setTint(0xffffff);
+      }, 500);
+    }, 3000);
+    setTimeout(function () {
+      game.keys.children.entries[3].anims.play('pressed', true);
+      game.keys.children.entries[3].setTint(0x7dcea0);
+      synth.triggerAttackRelease('F4', '4n');
+
+      setTimeout(function () {
+        game.keys.children.entries[3].anims.play('notpressed', true);
+        game.keys.children.entries[3].setTint(0xffffff);
+      }, 500);
+    }, 4000);
+  },
+};
 
 const sequences = {
   lilleKatt: 'piano-0piano-1piano-2',
