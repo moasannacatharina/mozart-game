@@ -23,17 +23,17 @@ class GameScene extends Scene {
   }
 
   preload() {
-    this.load.image('background', 'assets/background.png');
-    this.load.image('ground', 'assets/ground3.png');
-    this.load.image('platform', 'assets/platform2.png');
-    this.load.image('star', 'assets/star.png');
-    this.load.image('bomb', 'assets/bomb.png');
-    this.load.image('key', 'assets/key.png');
-    this.load.spritesheet('dude', 'assets/dude.png', {
+    this.load.image('background', '/background.png');
+    this.load.image('ground', '/ground3.png');
+    this.load.image('platform', '/platform2.png');
+    this.load.image('star', '/star.png');
+    this.load.image('bomb', '/bomb.png');
+    this.load.image('key', '/key.png');
+    this.load.spritesheet('dude', '/dude.png', {
       frameWidth: 32,
       frameHeight: 48,
     });
-    this.load.spritesheet('pianokey', 'assets/pianokey.png', {
+    this.load.spritesheet('pianokey', '/pianokey.png', {
       frameWidth: 100,
       frameHeight: 125,
     });
