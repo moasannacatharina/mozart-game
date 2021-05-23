@@ -1,12 +1,17 @@
 import Phaser, { Scene } from 'phaser';
-import { levelOneMelodies, levelTwoMelodies, sequences } from './melodies.js';
+import { levels, sequences } from './testLevels.js';
+import hasPoint from './functions/hasPoint';
+import playLevel from './functions/playLevel.js';
 import * as Tone from 'tone';
+import restart from './functions/restart';
+import checkKey from './functions/checkKey';
+import Player from './components/Player.js';
+import Keys from './components/Keys.js';
 
 class GameScene extends Scene {
   constructor() {
     super('game');
 
-    this.player;
     this.stars;
     this.bombs;
     this.platforms;
@@ -14,12 +19,16 @@ class GameScene extends Scene {
     this.score = 0;
     this.gameOver = false;
     this.scoreText;
-    this.keys;
     this.colliderActivated = true;
     this.gameStart = true;
     this.startText;
     this.songName;
+    this.level = 1;
+    this.levelText;
     this.playedSequence = [];
+    this.numberOfCollisions = 0;
+    this.keys = new Keys(this);
+    this.player = new Player(this);
   }
 
   preload() {
@@ -28,71 +37,22 @@ class GameScene extends Scene {
     this.load.image('platform', '/platform2.png');
     this.load.image('star', '/star.png');
     this.load.image('bomb', '/bomb.png');
-    this.load.image('key', '/key.png');
-    this.load.spritesheet('dude', '/dude.png', {
-      frameWidth: 32,
-      frameHeight: 48,
-    });
-    this.load.spritesheet('pianokey', '/pianokey.png', {
-      frameWidth: 100,
-      frameHeight: 125,
-    });
+    this.load.image('button', '/button2.png');
+    this.player.preload();
+    this.keys.preload();
   }
 
   create() {
     this.add.image(400, 300, 'background');
 
-    //  The platforms group contains the ground and the 2 ledges we can jump on
     this.platforms = this.physics.add.staticGroup();
-    // keys = this.physics.add.staticGroup();
-    // //  Here we create the ground.
-    // //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+
     this.platforms.create(400, 588, 'ground').setScale(2).refreshBody();
 
-    //  Now let's create some ledges
-    // platforms.create(600, 400, "ground");
     this.platforms.create(400, 280, 'platform');
 
-    // The player and its settings
-    this.player = this.physics.add.sprite(400, 0, 'dude');
-
-    //  Player physics properties. Give the little guy a slight bounce.
-    this.player.setCollideWorldBounds(true);
-
-    //  Our player animations, turning, walking left and walking right.
-    this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'turn',
-      frames: [{ key: 'dude', frame: 4 }],
-      frameRate: 20,
-    });
-
-    this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'notpressed',
-      frames: this.anims.generateFrameNumbers('pianokey', { start: 0, end: 0 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'pressed',
-      frames: this.anims.generateFrameNumbers('pianokey', { start: 1, end: 0 }),
-      frameRate: 0,
-      repeat: 0,
-    });
+    this.player.create();
+    this.keys.create();
 
     //  Input Events
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -102,20 +62,29 @@ class GameScene extends Scene {
     //  The score
     this.scoreText = this.add.text(16, 16, 'Score: 0', {
       fontSize: '32px',
-      fill: '#000',
+      fill: '#FFF',
     });
 
-    let index = 0;
-    this.keys = this.physics.add.group({
-      key: 'pianokey',
-      repeat: 7,
-      name: 'hello world',
-      setXY: { x: 55, y: 475, stepX: 98 },
+    // The level
+    this.levelText = this.add.text(650, 16, `Level ${this.level}`, {
+      fontSize: '32px',
+      fill: '#FFF',
     });
 
-    this.keys.children.entries.map((item, i) => (item.name = 'piano-' + i));
+    this.startText = this.add.text(260, 16, '', {
+      fontSize: '32px',
+      fill: '#FFF',
+    });
 
-    //  Collide the player and the stars with the platforms
+    // restart-button in bottom corner
+    this.restartText = this.add.text(700, 580, 'restart');
+    this.restartText
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => {
+        restart(this, levels);
+      });
+
+    //  Colliders
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.keys, this.keys);
     this.physics.add.collider(this.keys, this.platforms);
@@ -146,11 +115,7 @@ class GameScene extends Scene {
       this
     );
 
-    this.startText = this.add.text(260, 16, '', {
-      fontSize: '32px',
-      fill: '#000',
-    });
-
+    // function to start game
     this.startGame(this.gameStart);
   }
 
@@ -178,8 +143,12 @@ class GameScene extends Scene {
         child.anims.play('notpressed', true);
         child.setTint(0xffffff);
       });
-      this.player.setVelocityY(-330);
+      this.player.setVelocityY(-380);
       this.colliderActivated = true;
+    }
+
+    if (this.cursors.down.isDown) {
+      this.player.setVelocityY(300);
     }
   }
 
@@ -189,6 +158,7 @@ class GameScene extends Scene {
     }
     if (!gameStart) {
       setTimeout(() => {
+        this.startText.setX(360);
         this.startText.setText('GO!');
         this.player.body.enable = true;
         this.player.setVisible(true);
@@ -223,105 +193,76 @@ class GameScene extends Scene {
   //   }
 
   playSequence() {
-    const synth = new Tone.Synth().toDestination();
-    this.startText.setText('Play this melody');
+    this.numberOfCollisions = 0;
 
-    console.log(levelOneMelodies);
-    let songArray = Object.entries(levelOneMelodies);
-    console.log(songArray);
+    this.songName = playLevel(this, levels[this.level - 1]);
 
-    if (
-      Object.keys(levelOneMelodies).length === 0 &&
-      levelOneMelodies.constructor === Object
-    ) {
-      songArray = Object.entries(levelTwoMelodies);
+    // if (this.level === 2) {
+    //   this.numberOfCollisions = 0;
+    //   console.log('level two!');
+    //   this.songName = playLevel(this, levelTwoMelodies);
+    //   this.level++;
+    //   return this.songName;
+    // }
+    // if (this.level === 3) {
+    //   this.numberOfCollisions = 0;
+    //   console.log('level three!');
+    //   this.songName = playLevel(this, levelThreeMelodies);
+    //   this.level++;
+    //   return this.songName;
+    // }
 
-      const random = Math.floor(Math.random() * songArray.length);
-
-      this.songName = songArray[random][0];
-      const songFunction = songArray[random][1];
-      songFunction(this);
-
-      console.log(this.player);
-      this.player.body.enable = false;
-      this.player.setVisible();
-
-      this.gameStart = false;
-      this.startGame(this.gameStart);
-
-      return this.songName;
+    if (levels[this.level - 1].isCompleted) {
+      this.level++;
     }
-
-    const random = Math.floor(Math.random() * songArray.length);
-
-    this.songName = songArray[random][0];
-    const songFunction = songArray[random][1];
-    songFunction(this);
-
-    this.player.body.enable = false;
-    this.player.setVisible();
-
-    this.gameStart = false;
-    this.startGame(this.gameStart);
-
     return this.songName;
   }
 
   hitKey(player, key) {
-    key.setTint(0x7dcea0);
-    key.anims.play('pressed', true);
-    var pianoImg = this.textures.get('pianokey');
+    checkKey(this, key, sequences, restart, levels);
 
-    pianoImg.getSourceImage();
+    this.numberOfCollisions++;
+
+    key.anims.play('pressed', true);
 
     key.setSize(90, 100, true);
     key.setOffset(0, 25);
 
     const synth = new Tone.Synth().toDestination();
-    if (key.name === this.keys.children.entries[0].name) {
+    if (key.name === 'piano-0') {
       synth.triggerAttackRelease('C4', '8n');
-      console.log('first key!');
     }
-
-    if (key === this.keys.children.entries[1]) {
+    if (key.name === 'piano-1') {
       synth.triggerAttackRelease('D4', '4n');
-      console.log('second key!');
     }
-    if (key === this.keys.children.entries[2]) {
+    if (key.name === 'piano-2') {
       synth.triggerAttackRelease('E4', '4n');
-      console.log('third key!');
     }
-    if (key === this.keys.children.entries[3]) {
+    if (key.name === 'piano-3') {
       synth.triggerAttackRelease('F4', '4n');
-      console.log('fourth key!');
     }
-    if (key === this.keys.children.entries[4]) {
+    if (key.name === 'piano-4') {
       synth.triggerAttackRelease('G4', '4n');
-      console.log('fifth key!');
     }
-    if (key === this.keys.children.entries[5]) {
+    if (key.name === 'piano-5') {
       synth.triggerAttackRelease('A4', '4n');
-      console.log('sixth key!');
     }
-    if (key === this.keys.children.entries[6]) {
+    if (key.name === 'piano-6') {
       synth.triggerAttackRelease('B4', '4n');
-      console.log('seventh key!');
     }
-    if (key === this.keys.children.entries[7]) {
+    if (key.name === 'piano-7') {
       synth.triggerAttackRelease('C5', '4n');
-      console.log('octave!');
     }
 
     this.playedSequence.push(key.name);
 
-    // console.log(playedSequence);
+    console.log(this.playedSequence);
+    console.log(sequences[this.songName]);
 
-    if (this.hasPoint(this.playedSequence, sequences[this.songName])) {
+    if (hasPoint(this, this.playedSequence, sequences[this.songName])) {
       console.log('get point for', this.songName);
       this.playedSequence = [];
       this.gameStart = true;
-      delete levelOneMelodies[this.songName];
-
       setTimeout(() => {
         this.keys.children.iterate(function (child) {
           child.anims.play('notpressed', true);
@@ -334,17 +275,6 @@ class GameScene extends Scene {
     }
 
     this.colliderActivated = false;
-  }
-
-  hasPoint(userInput, target) {
-    const str = userInput.join('');
-
-    if (str.includes(target)) {
-      this.score += 10;
-      this.scoreText.setText('Score: ' + this.score);
-    }
-
-    return str.includes(target);
   }
 
   hitBomb(player, bomb) {
