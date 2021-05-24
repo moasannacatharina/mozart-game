@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import PreloadScene from './PreloadScene';
 import { GameScene } from './GameScene';
+import EndScene from './EndScene';
 
 const Config = {
   type: Phaser.AUTO,
@@ -10,11 +11,11 @@ const Config = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 300 },
+      gravity: { y: 500 },
       debug: true,
     },
   },
-  scene: [PreloadScene, GameScene],
+  scene: [PreloadScene, GameScene, EndScene],
 };
 
 export default Config;
