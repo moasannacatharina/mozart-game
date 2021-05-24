@@ -1,5 +1,10 @@
 const playLevel = (game, melodies) => {
-  if (game.level > 1) {
+  let songNames = Object.keys(melodies.melodies);
+  if (
+    !melodies.melodies[songNames[0]].isCompleted &&
+    !melodies.melodies[songNames[1]].isCompleted &&
+    game.level > 1
+  ) {
     console.log(game.level);
 
     game.levelText.setText(`Level ${game.level}`);
@@ -21,7 +26,6 @@ const playLevel = (game, melodies) => {
   game.startText.setX(260);
   game.startText.setText('Play this melody');
 
-  let songNames = Object.keys(melodies.melodies);
   //   console.log(songNames);
   //   let songArray = Object.entries(melodies);
 
@@ -30,7 +34,7 @@ const playLevel = (game, melodies) => {
   for (let i = 0; i < Object.keys(melodies.melodies).length; i++) {
     if (melodies.melodies[songNames[i]].isCompleted === false) {
       const songFunction = melodies.melodies[songNames[i]].melody;
-      console.log(melodies.melodies[songNames[i]].isCompleted);
+      // console.log(melodies.melodies[songNames[i]].isCompleted);
 
       // play melody sequence animation
       songFunction(game);
@@ -46,8 +50,9 @@ const playLevel = (game, melodies) => {
       melodies.melodies[songNames[i]].isCompleted = true;
 
       return game.songName;
-    } else {
+    } else if (melodies.melodies[songNames[i]].isCompleted) {
       melodies.isCompleted = true;
+      console.log(melodies.isCompleted);
     }
   }
 };

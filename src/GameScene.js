@@ -49,7 +49,9 @@ class GameScene extends Scene {
 
     this.platforms.create(400, 588, 'ground').setScale(2).refreshBody();
 
-    this.platforms.create(400, 280, 'platform');
+    this.platforms.create(400, 280, 'platform').setScale(0.5).refreshBody();
+
+    // this.platforms.children.entries[1].body.checkCollision.down = false;
 
     this.player.create();
     this.keys.create();
@@ -143,16 +145,19 @@ class GameScene extends Scene {
         child.anims.play('notpressed', true);
         child.setTint(0xffffff);
       });
-      this.player.setVelocityY(-380);
+      this.player.setVelocityY(-500);
       this.colliderActivated = true;
     }
 
     if (this.cursors.down.isDown) {
-      this.player.setVelocityY(300);
+      this.player.setVelocityY(500);
     }
   }
 
   startGame(gameStart) {
+    if (this.level === 6) {
+      this.scene.start('endscene');
+    }
     if (gameStart) {
       this.songName = this.playSequence();
     }
@@ -193,6 +198,9 @@ class GameScene extends Scene {
   //   }
 
   playSequence() {
+    if (this.level === 6) {
+      return;
+    }
     this.numberOfCollisions = 0;
 
     this.songName = playLevel(this, levels[this.level - 1]);
@@ -211,7 +219,6 @@ class GameScene extends Scene {
     //   this.level++;
     //   return this.songName;
     // }
-
     if (levels[this.level - 1].isCompleted) {
       this.level++;
     }
@@ -228,7 +235,11 @@ class GameScene extends Scene {
     key.setSize(90, 100, true);
     key.setOffset(0, 25);
 
-    const synth = new Tone.Synth().toDestination();
+    const synth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: {
+        type: 'triangle',
+      },
+    }).toDestination();
     if (key.name === 'piano-0') {
       synth.triggerAttackRelease('C4', '8n');
     }
