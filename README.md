@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 INSERT MANDATORY GIF
+=======
+![](https://c.tenor.com/dBZyCPCN5icAAAAd/symphony-conductor.gif)
+>>>>>>> Stashed changes
 
 # Project Title
 
