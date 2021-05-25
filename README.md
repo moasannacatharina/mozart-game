@@ -1,4 +1,4 @@
-<img src="https://tenor.com/view/symphony-conductor-yas-yes-yess-gif-5869764" width="100%"/>
+![](https://c.tenor.com/dBZyCPCN5icAAAAd/symphony-conductor.gif)
 
 # Mozart Says
 
