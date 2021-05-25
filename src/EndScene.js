@@ -10,47 +10,49 @@ class EndScene extends Scene {
 
   preload() {
     this.player.preload();
-    this.load.image('rednote', '/rednote.png');
-    this.load.image('bluenote', '/bluenote.png');
-    this.load.image('yellownote', '/yellownote.png');
-    this.load.image('greennote', '/greennote.png');
+    this.load.image('endframe', '/endframe.png');
+    this.load.image('pinknote', '/pinknote.png');
+    this.load.image('redpinknote', '/redpinknote.png');
+    this.load.image('orangenote', '/orangenote.png');
+    this.load.image('lightgreennote', '/lightgreennote.png');
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#030535');
+    // this.cameras.main.setBackgroundColor('#030535');
+    this.add.image(400, 300, 'endframe');
     this.cursors = this.input.keyboard.createCursorKeys();
     this.player.create();
 
-    var rednote = this.add.particles('rednote');
-    var bluenote = this.add.particles('bluenote');
-    var greennote = this.add.particles('greennote');
-    var yellownote = this.add.particles('yellownote');
+    var pinknote = this.add.particles('pinknote');
+    var redpinknote = this.add.particles('redpinknote');
+    var lightgreennote = this.add.particles('lightgreennote');
+    var orangenote = this.add.particles('orangenote');
 
-    var redEmitter = rednote.createEmitter({
+    var pinkEmitter = pinknote.createEmitter({
       speed: 125,
       gravity: { x: 0, y: 200 },
       scale: { start: 0.1, end: 1 },
     });
-    var greenEmitter = greennote.createEmitter({
+    var lightgreenEmitter = lightgreennote.createEmitter({
       speed: 125,
       gravity: { x: 0, y: 200 },
       scale: { start: 0.1, end: 1 },
     });
-    var yellowEmitter = yellownote.createEmitter({
+    var orangeEmitter = orangenote.createEmitter({
       speed: 125,
       gravity: { x: 0, y: 200 },
       scale: { start: 0.1, end: 1 },
     });
-    bluenote.createEmitter({
+    redpinknote.createEmitter({
       speed: 125,
       gravity: { x: 0, y: 200 },
       scale: { start: 0.1, end: 1 },
       follow: this.player,
     });
-    redEmitter.setPosition(400, 300);
-    greenEmitter.setPosition(200, 300);
-    yellowEmitter.setPosition(600, 300);
-    this.text = this.add.text(350, 100, 'YOU WIN', { fontSize: '30px' });
+    pinkEmitter.setPosition(400, 300);
+    lightgreenEmitter.setPosition(200, 300);
+    orangeEmitter.setPosition(600, 300);
+    // this.text = this.add.text(350, 100, 'YOU WIN', { fontSize: '30px' });
   }
   update() {
     if (this.gameOver) {

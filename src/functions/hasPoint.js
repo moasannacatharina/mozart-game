@@ -6,7 +6,6 @@ const hasPoint = (game, userInput, target) => {
   for (var i = 0, l = target.length; i < l; i++) {
     if (target[i] instanceof Array && userInput[i] instanceof Array) {
       if (!target[i].equals(userInput[i])) {
-        console.log('not quite');
         return false;
       }
     } else if (target[i] != userInput[i]) {
