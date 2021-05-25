@@ -1,9 +1,7 @@
 const checkKey = (game, key, sequences, restart, levels) => {
   if (key.name === sequences[game.songName][game.numberOfCollisions]) {
-    // console.log(key.name, sequences[game.songName][game.numberOfCollisions]);
     key.setTint(0x7dcea0);
   } else {
-    console.log('WRONG');
     key.setTint(0xff0000);
     key.anims.play('pressed', true);
 
