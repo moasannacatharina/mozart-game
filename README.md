@@ -27,14 +27,23 @@ Play the game [here](https://mozart-says.netlify.app/).
 
 # Code Review
 
-1. `example.js:10-15` - Remember to think about X and this could be refactored using the amazing Y function.
+1. Very good and clean structure. Functions, components etc.
+2. Cool concept! Fun game to practice your memory!
+3. Preload scene looks very good and suits the theme perfectly!
+4. 'hasPoint.js 19-26' remember to remove comments.
+5. Incredibly impressive work on 'levels.js'.
+6. There is a small delay when the player jumps on the keys and the key pushes down. Does not always trigger.
+7. (Very small note) The low gravity can be annoying after a while :D
+8. On rare occasion Mozart fall half-way through a key.
+9. Possible to fail the level after 'correct', if player triggers another key quickly afterwards.
+10. Overall, very difficult to make a review on this project, since it was top notch! Well done!
 
 # Testers
 
 Tested by the following people:
 
-1. Jane Doe
-2. John Doe
+1. Erik White
+2. Mark Mados
 3. Jane Doe
 4. John Doe
 
