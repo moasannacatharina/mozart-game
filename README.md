@@ -1,4 +1,4 @@
-<img src="https://tenor.com/view/symphony-conductor-yas-yes-yess-gif-5869764" width="100%"/>
+![](https://c.tenor.com/dBZyCPCN5icAAAAd/symphony-conductor.gif)
 
 # Mozart Says
 
@@ -27,7 +27,16 @@ Play the game [here](https://mozart-says.netlify.app/).
 
 # Code Review
 
-1. `example.js:10-15` - Remember to think about X and this could be refactored using the amazing Y function.
+1. Very good and clean structure. Functions, components etc.
+2. Cool concept! Fun game to practice your memory!
+3. Preload scene looks very good and suits the theme perfectly!
+4. 'hasPoint.js 19-26' remember to remove comments.
+5. Incredibly impressive work on 'levels.js'.
+6. There is a small delay when the player jumps on the keys and the key pushes down. Does not always trigger.
+7. (Very small note) The low gravity can be annoying after a while :D
+8. On rare occasion Mozart fall half-way through a key.
+9. Possible to fail the level after 'correct', if player triggers another key quickly afterwards.
+10. Overall, very difficult to make a review on this project, since it was top notch! Well done!
 
 # Creators
 
@@ -42,6 +51,7 @@ Tested by the following people:
 2. [Mark Mados](https://github.com/MadosMark)
 3. [Gilda Eklöf](https://github.com/gildaeklof)
 4. [Amanda Fager](https://github.com/amandafager)
+
 
 Tested by the following muggles (non-coders):
 
