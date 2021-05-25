@@ -29,18 +29,23 @@ Play the game [here](https://mozart-says.netlify.app/).
 
 1. `example.js:10-15` - Remember to think about X and this could be refactored using the amazing Y function.
 
+# Creators
+
+- [Moa Berg](https://github.com/moasannacatharina)
+- [Rikard Segerkvist](https://github.com/rikardseg)
+
 # Testers
 
 Tested by the following people:
 
-1. Jane Doe
-2. John Doe
-3. Jane Doe
-4. John Doe
+1. [Erik White](https://github.com/nausea87)
+2. [Mark Mados](https://github.com/MadosMark)
+3. [Gilda Eklöf](https://github.com/gildaeklof)
+4. [Amanda Fager](https://github.com/amandafager)
 
 Tested by the following muggles (non-coders):
 
-1. Olle.
-2. Per-Arne.
-3. Arthur.
-4. Gabbe.
+1. Olle
+2. Per-Arne
+3. Arthur
+4. Gabbe
